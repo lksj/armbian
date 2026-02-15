@@ -26,27 +26,48 @@ jobs:
           git clone https://github.com/armbian/build.git
           cd build
 
-      - name: Build Armbian Image
+#      - name: Build Armbian Image
+#        run: |
+#          cd build
+#          #./compile.sh kernel \
+#          #BOARD=qemu-uboot-arm64 \
+#          #BRANCH=current \
+#          #RELEASE=bookworm \
+#          #LOG_VERBOSE=yes \
+#          #COMPILE_KERNEL=yes
+#          #
+#          #          BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no COMPILE_KERNEL=yes CLEAN_LEVEL=make-clean PROGRESS_DISPLAY=none LOG_VERBOSE=ye
+#          ./compile.sh kernel \
+###          BOARD=qemu-uboot-arm64 \
+#          BRANCH=current \
+#          RELEASE=trixie \
+#          USE_CACHE=no \
+#          LOCAL_CACHE=no \
+#          CLEAN_LEVEL=distclean \
+#          LOG_VERBOSE=yes
+##
+#          ls -lR ./output/
+
+      - name: Compile Kernel (ignore cache)
         run: |
           cd build
-          #./compile.sh kernel \
-          #BOARD=qemu-uboot-arm64 \
-          #BRANCH=current \
-          #RELEASE=bookworm \
-          #LOG_VERBOSE=yes \
-          #COMPILE_KERNEL=yes
-          #
-          #          BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no COMPILE_KERNEL=yes CLEAN_LEVEL=make-clean PROGRESS_DISPLAY=none LOG_VERBOSE=ye
           ./compile.sh kernel \
-          BOARD=qemu-uboot-arm64 \
-          BRANCH=current \
-          RELEASE=trixie \
-          USE_CACHE=no \
-          LOCAL_CACHE=no \
-          CLEAN_LEVEL=distclean \
-          LOG_VERBOSE=yes
+            BOARD=qemu-uboot-arm64 \
+            BRANCH=current \
+            RELEASE=trixie \
+            ARTIFACT_IGNORE_CACHE=yes \
+            CLEAN_LEVEL=distclean
 
           ls -lR ./output/
+
+      - name: Extract vmlinuz and DTB
+        run: |
+          cd build/output/debs
+          mkdir extracted
+          dpkg-deb -x linux-image-*.deb extracted/
+          dpkg-deb -x linux-dtb-*.deb extracted/
+          find extracted/ -name "vmlinuz*" -exec cp {} ./ \;
+          find extracted/ -name "*.dtb" -exec cp {} ./ \;
 
 
       - name: Upload Artifact
