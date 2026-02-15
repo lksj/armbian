@@ -29,14 +29,23 @@ jobs:
       - name: Build Armbian Image
         run: |
           cd build
+          #./compile.sh kernel \
+          #BOARD=qemu-uboot-arm64 \
+          #BRANCH=current \
+          #RELEASE=bookworm \
+          #LOG_VERBOSE=yes \
+          #COMPILE_KERNEL=yes
+          #
+          #          BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no COMPILE_KERNEL=yes CLEAN_LEVEL=make-clean PROGRESS_DISPLAY=none LOG_VERBOSE=ye
           ./compile.sh kernel \
           BOARD=qemu-uboot-arm64 \
           BRANCH=current \
-          RELEASE=bookworm \
-          LOG_VERBOSE=yes \
-          COMPILE_KERNEL=yes
-          #
-          #          BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no COMPILE_KERNEL=yes CLEAN_LEVEL=make-clean PROGRESS_DISPLAY=none LOG_VERBOSE=ye
+          RELEASE=trixie \
+          USE_CACHE=no \
+          LOCAL_CACHE=no \
+          CLEAN_LEVEL=distclean \
+          LOG_VERBOSE=yes
+
           ls -lR ./output/
 
 
