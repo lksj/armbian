@@ -1,5 +1,7 @@
-name: Build Armbian for QEMU aarch64
-on: [push]
+name: Build Armbian Kernel for QEMU aarch64
+on:
+  workflow_dispatch
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,6 +24,7 @@ jobs:
           cd build
           ./compile.sh kernel BOARD=qemu-uboot-arm64 BRANCH=current RELEASE=trixie
           #          BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no COMPILE_KERNEL=yes CLEAN_LEVEL=make-clean PROGRESS_DISPLAY=none LOG_VERBOSE=ye
+          ls -lR ./output/
 
 
       - name: Upload Artifact
