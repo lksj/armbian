@@ -1,6 +1,14 @@
 name: Build Armbian Kernel for QEMU aarch64
+
+
 on:
-  workflow_dispatch
+  workflow_dispatch:
+
+  push:
+    tags:
+      - 'v*-build' # Сработает при git push origin v1.2.3-build
+
+
 
 jobs:
   build:
