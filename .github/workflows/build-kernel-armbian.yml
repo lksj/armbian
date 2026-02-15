@@ -9,7 +9,6 @@ on:
       - 'v*-build' # Сработает при git push origin v1.2.3-build
 
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,7 +29,7 @@ jobs:
       - name: Build Armbian Image
         run: |
           cd build
-          ./compile.sh kernel BOARD=qemu-uboot-arm64 BRANCH=current RELEASE=trixie
+          ./compile.sh kernel BOARD=qemu-uboot-arm64 BRANCH=current RELEASE=bookworm LOG_VERBOSE=yes
           #          BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no COMPILE_KERNEL=yes CLEAN_LEVEL=make-clean PROGRESS_DISPLAY=none LOG_VERBOSE=ye
           ls -lR ./output/
 
