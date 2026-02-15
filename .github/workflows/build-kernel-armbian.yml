@@ -20,11 +20,16 @@ jobs:
       - name: Build Armbian Image
         run: |
           cd build
-          ./compile.sh kernel BOARD=qemu-uboot-arm64 BRANCH=current #RELEASE=bookworm BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no COMPILE_KERNEL=yes CLEAN_LEVEL=make-clean PROGRESS_DISPLAY=none LOG_VERBOSE=ye
+          ./compile.sh kernel BOARD=qemu-uboot-arm64 BRANCH=current RELEASE=trixie
+          #          BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no COMPILE_KERNEL=yes CLEAN_LEVEL=make-clean PROGRESS_DISPLAY=none LOG_VERBOSE=ye
 
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: armbian-image
-          path: build/output/images/*
+          name: armbian-kernel
+          path: |
+            build/output/images/vmlinuz-*
+            build/output/images/dtb-*/*.dtb
+            build/output/images/modules-*.tgz
+            if-no-files-found: error
