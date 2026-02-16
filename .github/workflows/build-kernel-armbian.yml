@@ -68,9 +68,10 @@ jobs:
           cd build/output/
           mkdir ./debs/extracted
           dpkg-deb -x ./debs/linux-image-*.deb ./debs/extracted/
+          ls -lR ./debs/extracted/
           dpkg-deb -x ./debs/linux-dtb-*.deb ./debs/extracted/
           cd ./debs/extracted/boot/
-          ls -lR
+          
           tar cvf $GITHUB_WORKSPACE/build/output/images/linux-image.tar.gz *
           #find ./debs/extracted/ -name "vmlinuz*" -exec cp {} ./images/ \;
           #find ./debs/extracted/ -name "*.dtb" -exec cp {} ./images/ \;
