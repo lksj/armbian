@@ -33,8 +33,7 @@ jobs:
           BOARD=qemu-uboot-arm64 \
           BRANCH=current \
           RELEASE=trixie \
-          LOG_VERBOSE=yes \
-          COMPILE_KERNEL=yes
+          LOG_VERBOSE=yes
 
           ls -lR ./output/
 #          #
