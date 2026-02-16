@@ -63,21 +63,33 @@ jobs:
 
 #         ls -lR ./output/
 
+
       - name: Extract vmlinuz and DTB
         run: |
           cd build/output/
+          KERNEL_VER=$(dpkg-deb -f ./debs/linux-image-*.deb Version | cut -d'-' -f1)
           mkdir ./debs/extracted
           dpkg-deb -x ./debs/linux-image-*.deb ./debs/extracted/
-          ls -lR ./debs/extracted/
           dpkg-deb -x ./debs/linux-dtb-*.deb ./debs/extracted/
-          cd ./debs/extracted/boot/
-          
-          tar cvf $GITHUB_WORKSPACE/build/output/images/linux-image.tar.gz *
-          #find ./debs/extracted/ -name "vmlinuz*" -exec cp {} ./images/ \;
-          #find ./debs/extracted/ -name "*.dtb" -exec cp {} ./images/ \;
 
-          ls -lR .
+      - name: Extract initrd from deb package
+        run: |
+          cd build
+          mkdir tmp_deb_extract
+          dpkg-deb -x output/debs/linux-image-*.deb tmp_deb_extract/
+          KERNEL_VER=$(dpkg-deb -f output/debs/linux-image-*.deb Version | cut -d'-' -f1)
+          MODULES_DIR=tmp_deb_extract/lib/modules/$KERNEL_VER \
+            sudo mkinitramfs -o output/images/initrd.img-$KERNEL_VER $KERNEL_VER
+          lsinitramfs output/debs/extracted/boot/initrd.img-$KERNEL_VER | grep virtio_blk
+          rm -rf tmp_deb_extract
 
+
+      - name: Pack vmlinuz, DTB and initrd
+        run: |
+          cd build/output/
+          KERNEL_VER=$(dpkg-deb -f ./debs/linux-image-*.deb Version | cut -d'-' -f1)
+          ./debs/extracted/boot/
+          tar cvf $GITHUB_WORKSPACE/build/output/images/linux-image-$KERNEL_VER.tar.gz *
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
