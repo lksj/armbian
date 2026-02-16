@@ -69,9 +69,10 @@ jobs:
           mkdir ./debs/extracted
           dpkg-deb -x ./debs/linux-image-*.deb ./debs/extracted/
           dpkg-deb -x ./debs/linux-dtb-*.deb ./debs/extracted/
-          ls -lR ./debs/extracted/
-          find ./debs/extracted/ -name "vmlinuz*" -exec cp {} ./images/ \;
-          find ./debs/extracted/ -name "*.dtb" -exec cp {} ./images/ \;
+          cd ./debs/extracted/boot/
+          tar cvf /build/output/images/linux-image.tar.gz *
+          #find ./debs/extracted/ -name "vmlinuz*" -exec cp {} ./images/ \;
+          #find ./debs/extracted/ -name "*.dtb" -exec cp {} ./images/ \;
 
           ls -lR .
 
@@ -84,4 +85,5 @@ jobs:
             build/output/images/vmlinuz-*
             build/output/images/dtb-*/*.dtb
             build/output/images/modules-*.tgz
+            build/output/images/linux-image.tar.gz
             if-no-files-found: error
