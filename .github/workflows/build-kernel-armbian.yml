@@ -67,8 +67,8 @@ jobs:
         run: |
           cd build/output/
           mkdir ./debs/extracted
-          dpkg-deb -x /debs/linux-image-*.deb ./debs/extracted/
-          dpkg-deb -x /debs/linux-dtb-*.deb ./debs/extracted/
+          dpkg-deb -x ./debs/linux-image-*.deb ./debs/extracted/
+          dpkg-deb -x ./debs/linux-dtb-*.deb ./debs/extracted/
           ls -lR ./debs/extracted/
           find ./debs/extracted/ -name "vmlinuz*" -exec cp {} ./images/ \;
           find ./debs/extracted/ -name "*.dtb" -exec cp {} ./images/ \;
