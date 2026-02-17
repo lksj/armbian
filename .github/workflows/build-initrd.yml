@@ -64,8 +64,8 @@ jobs:
 
       - name: Create initrd
         run: |
-          chroot debian-chroot /bin/bash mkinitramfs.sh
-          mv ./debian-chroot/images ./build/output/
+          sudo chroot debian-chroot /bin/bash mkinitramfs.sh
+          sudo mv ./debian-chroot/images ./build/output/
 
       - name: Delete chroot
         run: |
