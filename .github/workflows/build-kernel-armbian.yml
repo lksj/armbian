@@ -38,9 +38,9 @@ jobs:
           LOG_VERBOSE=yes
 
           ls -lR ./output/
-#          #
-#          #          BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no COMPILE_KERNEL=yes CLEAN_LEVEL=make-clean PROGRESS_DISPLAY=none LOG_VERBOSE=ye
-#          ./compile.sh kernel \
+          #
+          #          BUILD_DESKTOP=no BUILD_MINIMAL=yes KERNEL_CONFIGURE=no COMPILE_KERNEL=yes CLEAN_LEVEL=make-clean PROGRESS_DISPLAY=none LOG_VERBOSE=ye
+          ./compile.sh kernel \
 ###          BOARD=qemu-uboot-arm64 \
 #          BRANCH=current \
 #          RELEASE=trixie \
