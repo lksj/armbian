@@ -60,7 +60,7 @@ jobs:
           mkinitramfs  -o /images/initrd.img-$KERNEL_VER $KERNEL_VER
           EOF
 
-          cat ./debian/chroot/mkinitramfs.sh
+          cat ./debian-chroot/mkinitramfs.sh
 
       - name: Create initrd
         run: |
