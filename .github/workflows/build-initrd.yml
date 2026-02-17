@@ -42,19 +42,19 @@ jobs:
           cp -Rv ./build/output/debs/linux-image-*.deb ./debian-chroot/debs
 
 
-          debootstrap stable debian-chroot http://deb.debian.org/debian
+          sudo debootstrap stable debian-chroot http://deb.debian.org/debian
 
-          mount -t proc proc  debian-chroot/proc
-          mount -t sysfs sys  debian-chroot/sys
-          mount -o bind /dev  debian-chroot/dev/
-          mount -t devpts devpts  debian-chroot/dev/pts
+          sudo mount -t proc proc  debian-chroot/proc
+          sudo mount -t sysfs sys  debian-chroot/sys
+          sudo mount -o bind /dev  debian-chroot/dev/
+          sudo mount -t devpts devpts  debian-chroot/dev/pts
 
 
       - name: Create mkinitramfs.sh
         run: |
           cat >./debian-chroot/mkinitramfs.sh <<EOF
           set -x
-          apt install -y initramfs-tools
+          sudo apt install -y initramfs-tools
           KERNEL_VER=$(dpkg-deb -f /debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64
           dpkg-deb -x debs/linux-image-*.deb /
           mkinitramfs  -o /images/initrd.img-$KERNEL_VER $KERNEL_VER
@@ -62,17 +62,17 @@ jobs:
 
       - name: Create initrd
         run: |
-          chroot debian-chroot /bin/bash mkinitramfs.sh
+          sudo chroot debian-chroot /bin/bash mkinitramfs.sh
           mv ./debian-chroot/images ./build/output/
 
       - name: Delete chroot
         run: |
-          umount debian-chroot/proc
-          umount debian-chroot/sys
-          umount debian-chroot/dev/pts
-          umount debian-chroot/dev/
+          sudo umount debian-chroot/proc
+          sudo umount debian-chroot/sys
+          sudo umount debian-chroot/dev/pts
+          sudo umount debian-chroot/dev/
 
-          rm -rf debian-chroot/*
+          sudo rm -rf debian-chroot/*
 
 
       - name: Extract vmlinuz and DTB
