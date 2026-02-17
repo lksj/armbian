@@ -21,8 +21,10 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+
       - name: Unpack artifacts
         run: |
+          ls -lR temp/  
           unzip temp/kernel-artifacts/armbian-kernel.zip
 
 
