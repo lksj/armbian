@@ -100,7 +100,7 @@ jobs:
 #         if [ -z "$KERNEL_VER" ]; then
 #         echo "Error: Armbian-Kernel-Version not found in deb package!"
 #         exit 1
-          fi
+#         fi
 #         echo "Detected kernel version: $KERNEL_VER"
 
 #         cd ./debs/extracted/boot/
