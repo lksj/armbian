@@ -19,6 +19,7 @@ jobs:
           name: armbian_kernel
           path: temp/kernel-artifacts
           run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Unpack artifacts
         run: |
