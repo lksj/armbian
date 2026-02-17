@@ -55,6 +55,7 @@ jobs:
           cat >./debian-chroot/mkinitramfs.sh <<EOF
           set -x
           sudo apt install -y initramfs-tools
+          dpkg-deb -f /debs/linux-image-*.deb Armbian-Kernel-Version
           KERNEL_VER=$(dpkg-deb -f /debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64
           dpkg-deb -x debs/linux-image-*.deb /
           mkinitramfs  -o /images/initrd.img-$KERNEL_VER $KERNEL_VER
