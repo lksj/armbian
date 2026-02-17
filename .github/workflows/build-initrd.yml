@@ -88,7 +88,7 @@ jobs:
       - name: Pack vmlinuz, DTB and initrd
         run: |
           cd build/output/
-          KERNEL_VER=$(dpkg-deb -f output/debs/linux-image-*.deb Armbian-Kernel-Version)
+          KERNEL_VER=$(dpkg-deb -f ./debs/linux-image-*.deb Armbian-Kernel-Version)
 
           if [ -z "$KERNEL_VER" ]; then
           echo "Error: Armbian-Kernel-Version not found in deb package!"
@@ -96,19 +96,22 @@ jobs:
           fi
           echo "Detected kernel version: $KERNEL_VER"
 
+          cp ./images/initrd.img* ./debs/extracted/boot/
+
           cd ./debs/extracted/boot/
+
           tar cvf $GITHUB_WORKSPACE/build/output/images/linux-image-$KERNEL_VER.tar.gz *
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: armbian-kernel
+          name: armbian-initrd
           path: |
             #build/output/images/vmlinuz-*
             #build/output/images/dtb-*/*.dtb
             #build/output/images/modules-*.tgz
             #build/output/debs/*.deb
 
-            build/output/images/linux-image.tar.gz
+            build/output/images/linux-image-*.tar.gz
 
             if-no-files-found: error
