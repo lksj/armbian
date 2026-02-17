@@ -42,7 +42,7 @@ jobs:
           cp -Rv ./build/output/debs/linux-image-*.deb ./debian-chroot/debs
 
 
-          sudo debootstrap stable debian-chroot http://deb.debian.org/debian
+          sudo debootstrap --include=sudo stable debian-chroot http://deb.debian.org/debian
 
           sudo mount -t proc proc  debian-chroot/proc
           sudo mount -t sysfs sys  debian-chroot/sys
