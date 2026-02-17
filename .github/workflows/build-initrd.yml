@@ -23,7 +23,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: armbian-kernel
-          path: /
+          path: ./
           run-id: ${{ github.event.workflow_run.id || github.event.inputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
