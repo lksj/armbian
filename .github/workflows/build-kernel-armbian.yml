@@ -8,6 +8,8 @@ on:
     tags:
       - 'v*-build' # Сработает при git push origin v1.2.3-build
 
+permissions:
+  actions: read
 
 jobs:
   build:
