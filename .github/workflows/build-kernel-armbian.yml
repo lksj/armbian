@@ -65,46 +65,46 @@ jobs:
 #         ls -lR ./output/
 
 
-      - name: Extract vmlinuz and DTB
-        run: |
-          cd build/output/
-          mkdir ./debs/extracted
-          dpkg-deb -x ./debs/linux-image-*.deb ./debs/extracted/
-          dpkg-deb -x ./debs/linux-dtb-*.deb ./debs/extracted/
+#     - name: Extract vmlinuz and DTB
+#       run: |
+#         cd build/output/
+#         mkdir ./debs/extracted
+#         dpkg-deb -x ./debs/linux-image-*.deb ./debs/extracted/
+#         dpkg-deb -x ./debs/linux-dtb-*.deb ./debs/extracted/
 
-      - name: Extract initrd from deb package
-        run: |
-          cd build
-          mkdir tmp_deb_extract
-          dpkg-deb -x output/debs/linux-image-*.deb tmp_deb_extract/
-          KERNEL_VER=$(dpkg-deb -f output/debs/linux-image-*.deb Armbian-Kernel-Version)
+#     - name: Extract initrd from deb package
+#       run: |
+#         cd build
+#         mkdir tmp_deb_extract
+#         dpkg-deb -x output/debs/linux-image-*.deb tmp_deb_extract/
+#         KERNEL_VER=$(dpkg-deb -f output/debs/linux-image-*.deb Armbian-Kernel-Version)
 
-          if [ -z "$KERNEL_VER" ]; then
-          echo "Error: Armbian-Kernel-Version not found in deb package!"
-          exit 1
+#         if [ -z "$KERNEL_VER" ]; then
+#         echo "Error: Armbian-Kernel-Version not found in deb package!"
+#         exit 1
+#         fi
+#         echo "Detected kernel version: $KERNEL_VER"
+
+
+#         MODULES_DIR=tmp_deb_extract/lib/modules/$KERNEL_VER \
+#           sudo mkinitramfs -o output/images/initrd.img-$KERNEL_VER $KERNEL_VER
+#         lsinitramfs output/debs/extracted/boot/initrd.img-$KERNEL_VER | grep virtio_blk
+#         rm -rf tmp_deb_extract
+
+
+#     - name: Pack vmlinuz, DTB and initrd
+#       run: |
+#         cd build/output/
+#         KERNEL_VER=$(dpkg-deb -f output/debs/linux-image-*.deb Armbian-Kernel-Version)
+
+#         if [ -z "$KERNEL_VER" ]; then
+#         echo "Error: Armbian-Kernel-Version not found in deb package!"
+#         exit 1
           fi
-          echo "Detected kernel version: $KERNEL_VER"
+#         echo "Detected kernel version: $KERNEL_VER"
 
-
-          MODULES_DIR=tmp_deb_extract/lib/modules/$KERNEL_VER \
-            sudo mkinitramfs -o output/images/initrd.img-$KERNEL_VER $KERNEL_VER
-          lsinitramfs output/debs/extracted/boot/initrd.img-$KERNEL_VER | grep virtio_blk
-          rm -rf tmp_deb_extract
-
-
-      - name: Pack vmlinuz, DTB and initrd
-        run: |
-          cd build/output/
-          KERNEL_VER=$(dpkg-deb -f output/debs/linux-image-*.deb Armbian-Kernel-Version)
-
-          if [ -z "$KERNEL_VER" ]; then
-          echo "Error: Armbian-Kernel-Version not found in deb package!"
-          exit 1
-          fi
-          echo "Detected kernel version: $KERNEL_VER"
-
-          cd ./debs/extracted/boot/
-          tar cvf $GITHUB_WORKSPACE/build/output/images/linux-image-$KERNEL_VER.tar.gz *
+#         cd ./debs/extracted/boot/
+#         tar cvf $GITHUB_WORKSPACE/build/output/images/linux-image-$KERNEL_VER.tar.gz *
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -114,5 +114,7 @@ jobs:
             build/output/images/vmlinuz-*
             build/output/images/dtb-*/*.dtb
             build/output/images/modules-*.tgz
-            build/output/images/linux-image.tar.gz
+            build/output/debs/*.deb
+
+#           build/output/images/linux-image.tar.gz
             if-no-files-found: error
