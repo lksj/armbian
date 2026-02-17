@@ -109,7 +109,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: armbian-kernel
+          name: armbian_kernel
           path: |
             build/output/images/vmlinuz-*
             build/output/images/dtb-*/*.dtb
