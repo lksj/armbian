@@ -3,6 +3,12 @@ name: Build Initrd and Final Archive
 
 on:
   workflow_dispatch:
+    inputs:
+      run-id:
+        description: 'Идентификатор запуска'
+        required: true
+        default: ''
+
 
   workflow_run:
     workflows: ["Build Armbian Kernel for QEMU aarch64"]
@@ -18,13 +24,13 @@ jobs:
         with:
           name: armbian-kernel
           path: temp/kernel-artifacts
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ github.event.workflow_run.id || github.event.inputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: Unpack artifacts
         run: |
-          ls -lR temp/  
+          ls -lR temp/
           unzip temp/kernel-artifacts/armbian-kernel.zip
 
 
