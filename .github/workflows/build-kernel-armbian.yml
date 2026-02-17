@@ -115,6 +115,7 @@ jobs:
             build/output/images/dtb-*/*.dtb
             build/output/images/modules-*.tgz
             build/output/debs/*.deb
+            #
+            #build/output/images/linux-image.tar.gz
 
-#           build/output/images/linux-image.tar.gz
             if-no-files-found: error
