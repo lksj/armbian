@@ -23,15 +23,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: armbian-kernel
-          path: temp/kernel-artifacts
+          path: /
           run-id: ${{ github.event.workflow_run.id || github.event.inputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-
-      - name: Unpack artifacts
-        run: |
-          ls -lR temp/
-          unzip temp/kernel-artifacts/armbian-kernel.zip
 
 
       - name: Create chroot
