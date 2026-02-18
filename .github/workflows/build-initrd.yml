@@ -46,7 +46,7 @@ jobs:
           cp -Rv ./build/output/debs/linux-image-*.deb ./debian-chroot/debs
 
 
-          sudo debootstrap --arch arm64 --include=sudo stable debian-chroot http://deb.debian.org/debian
+          sudo debootstrap --arch arm64 --include=sudo,initramfs-tools,debutils stable debian-chroot http://deb.debian.org/debian
 
           sudo mount -t proc proc  debian-chroot/proc
           sudo mount -t sysfs sys  debian-chroot/sys
@@ -60,6 +60,8 @@ jobs:
           sudo apt install -y initramfs-tools
           KERNEL_VER=$(dpkg-deb -f /debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64
           dpkg-deb -x debs/linux-image-*.deb /
+          ls -l /usr/bin/which
+          ls -l /usr/sbin/mkinitramfs
           which which
           which mkinitramfs
           ls -l $(which mkinitramfs)
