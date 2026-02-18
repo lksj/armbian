@@ -17,7 +17,7 @@ on:
 
 jobs:
   build-initrd:
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, arm64]
     steps:
       - name: Install Dependencies
         run: |
@@ -42,7 +42,7 @@ jobs:
           cp -Rv ./build/output/debs/linux-image-*.deb ./debian-chroot/debs
 
 
-          sudo debootstrap --include=sudo stable debian-chroot http://deb.debian.org/debian
+          sudo debootstrap --arch arm64 --include=sudo stable debian-chroot http://deb.debian.org/debian
 
           sudo mount -t proc proc  debian-chroot/proc
           sudo mount -t sysfs sys  debian-chroot/sys
