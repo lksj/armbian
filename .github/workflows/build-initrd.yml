@@ -62,6 +62,7 @@ jobs:
           echo $KERNEL_VER
           echo $PATH
           dpkg-deb -x debs/linux-image-*.deb /
+          file /usr/bin/ls
           ls -l /usr/bin/apt
           ls -l /usr/bin/which
           ls -l /usr/sbin/mkinitramfs
