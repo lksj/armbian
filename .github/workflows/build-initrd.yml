@@ -46,7 +46,7 @@ jobs:
           cp -Rv ./build/output/debs/linux-image-*.deb ./debian-chroot/debs
 
 
-          sudo debootstrap --arch arm64 --include=sudo,initramfs-tools,debutils stable debian-chroot http://deb.debian.org/debian
+          sudo debootstrap --arch arm64 --include=sudo,initramfs-tools,debianutils stable debian-chroot http://deb.debian.org/debian
 
           sudo mount -t proc proc  debian-chroot/proc
           sudo mount -t sysfs sys  debian-chroot/sys
