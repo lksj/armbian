@@ -57,7 +57,8 @@ jobs:
           sudo apt install -y initramfs-tools
           KERNEL_VER=$(dpkg-deb -f /debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64
           dpkg-deb -x debs/linux-image-*.deb /
-          mkinitramfs
+          which mkinitramfs
+          ls -l $(which mkinitramfs)
           mkinitramfs -c gzip -o /images/initrd.img-$KERNEL_VER $KERNEL_VER
           EOF
 
