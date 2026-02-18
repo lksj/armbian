@@ -2,6 +2,10 @@ name: Build Initrd and Final Archive
 
 
 on:
+  push:
+    branches:
+      - build
+
   workflow_dispatch:
     inputs:
       run-id:
@@ -29,7 +33,7 @@ jobs:
         with:
           name: armbian-kernel
           path: ./
-          run-id: ${{ github.event.workflow_run.id || github.event.inputs.run-id }}
+          run-id: ${{ github.event.workflow_run.id || github.event.inputs.run-id || '22103845596' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
 
@@ -53,10 +57,10 @@ jobs:
       - name: Create mkinitramfs.sh
         run: |
           cat >./debian-chroot/mkinitramfs.sh <<'EOF'
-          set -x
           sudo apt install -y initramfs-tools
           KERNEL_VER=$(dpkg-deb -f /debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64
           dpkg-deb -x debs/linux-image-*.deb /
+          which which
           which mkinitramfs
           ls -l $(which mkinitramfs)
           mkinitramfs -c gzip -o /images/initrd.img-$KERNEL_VER $KERNEL_VER
