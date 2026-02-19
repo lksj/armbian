@@ -2,9 +2,9 @@ name: Build Initrd and Final Archive
 
 
 on:
-  push:
-    branches:
-      - build
+  #push:
+  #  branches:
+  #    - build
 
   workflow_dispatch:
     inputs:

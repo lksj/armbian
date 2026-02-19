@@ -83,12 +83,11 @@ jobs:
         run: |
           sudo chroot debian-chroot /bin/bash -c "dpkg-deb -x debs/linux-image-*.deb /"
           
-      - name: Verify linker after extract
+      - name: Verify linker after extract and restore
         run: |
           # Проверяем, что линкер на месте и корректен
           if [ ! -e debian-chroot/lib/ld-linux-aarch64.so.1 ]; then
-          echo "ERROR: linker missing after dpkg-deb!"
-          exit 1
+          sudo cp -v ./debian-chroot/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1 ./debian-chroot/lib/
           fi
           file debian-chroot/lib/ld-linux-aarch64.so.1  # должен быть симлинк или ELF
 
@@ -97,7 +96,7 @@ jobs:
         run: |
           sudo chroot debian-chroot /bin/bash -c "KERNEL_VER=$(dpkg-deb -f /debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64 mkinitramfs -c gzip -o /images/initrd.img-$KERNEL_VER $KERNEL_VER"
 
-      - name: Step 5. Verify initrd created
+      - name: Verify initrd created
         run: |
           if [ ! -f debian-chroot/images/initrd.img-* ]; then
           echo "ERROR: initrd not created!"
