@@ -36,6 +36,16 @@ jobs:
           run-id: ${{ github.event.workflow_run.id || github.event.inputs.run-id || '22103845596' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get and export kernel version 
+          KERNEL_VER=$(dpkg-deb -f ./build/output/debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64
+
+          if [ -z "$KERNEL_VER" ]; then
+          echo "Error: Armbian-Kernel-Version not found in deb package!"
+          exit 1
+          fi
+          echo "Detected kernel version: $KERNEL_VER"
+          echo KERNEL_VER=$KERNEL_VER >>$GITHUB_ENV
+
 
       - name: Create chroot
         run: |
@@ -95,7 +105,7 @@ jobs:
 
       - name: Create initrd
         run: |
-          sudo chroot debian-chroot /bin/bash -c "pwd; ls -l /debs/*; export KERNEL_VER=$(dpkg-deb -f debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64; mkinitramfs -c gzip -o /images/initrd.img-$KERNEL_VER $KERNEL_VER"
+          sudo chroot debian-chroot /bin/bash -c "mkinitramfs -c gzip -o /images/initrd.img-$KERNEL_VER $KERNEL_VER"
 
       - name: Verify initrd created
         run: |
@@ -131,15 +141,7 @@ jobs:
       - name: Pack vmlinuz, DTB and initrd
         run: |
           cd build/output/
-          KERNEL_VER=$(dpkg-deb -f ./debs/linux-image-*.deb Armbian-Kernel-Version)
-
-          if [ -z "$KERNEL_VER" ]; then
-          echo "Error: Armbian-Kernel-Version not found in deb package!"
-          exit 1
-          fi
-          echo "Detected kernel version: $KERNEL_VER"
-
-          cp ./images/initrd.img* ./debs/extracted/boot/
+         cp ./images/initrd.img* ./debs/extracted/boot/
 
           cd ./debs/extracted/boot/
 
