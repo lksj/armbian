@@ -142,6 +142,8 @@ jobs:
 
           cd ./debs/extracted/boot/
 
+          ls -l
+
           tar cvf $GITHUB_WORKSPACE/build/output/images/linux-image-$KERNEL_VER.tar.gz *
 
       - name: Upload Artifact
