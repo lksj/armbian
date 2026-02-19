@@ -1,0 +1,160 @@
+name: Build Initrd and Final Archive (ARM)
+
+
+on:
+  push:
+    branches:
+      - build
+
+  workflow_dispatch:
+    inputs:
+      run-id:
+        description: 'Идентификатор запуска'
+        required: true
+        default: ''
+
+
+  workflow_run:
+    workflows: ["Build Armbian Kernel for QEMU aarch64"]
+    types: [completed]
+
+
+jobs:
+  build-initrd:
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y debootstrap
+
+      - name: Download Kernel Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: armbian-kernel
+          path: ./
+          run-id: ${{ github.event.workflow_run.id || github.event.inputs.run-id || '22103845596' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Create chroot
+        run: |
+          mkdir -p debian-chroot
+          mkdir -p ./debian-chroot/debs
+          mkdir -p ./debian-chroot/images
+
+          cp -Rv ./build/output/debs/linux-image-*.deb ./debian-chroot/debs
+
+
+          sudo debootstrap --arch arm64 --include=sudo,initramfs-tools,coreutils,debianutils,file stable debian-chroot http://deb.debian.org/debian || sudo cat /home/runner/work/armbian/armbian/debian-chroot/debootstrap/debootstrap.log
+          sudo file ./debian-chroot/bin/true
+
+          sudo rm -rf ./debian-chroot/lib/ld-linux-aarch64.so.1
+          sudo cp -v ./debian-chroot/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1 ./debian-chroot/lib/
+
+          sudo mount -t proc proc  debian-chroot/proc
+          sudo mount -t sysfs sys  debian-chroot/sys
+          sudo mount -o bind /dev  debian-chroot/dev/
+          sudo mount -t devpts devpts  debian-chroot/dev/pts
+
+
+      - name: Create mkinitramfs.sh
+        run: |
+          cat >./debian-chroot/mkinitramfs.sh <<'EOF'
+          sudo apt install -y initramfs-tools
+          KERNEL_VER=$(dpkg-deb -f /debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64
+          echo $KERNEL_VER
+          echo $PATH
+          dpkg-deb -x debs/linux-image-*.deb /
+          ldd /usr/bin/ls
+          file /usr/bin/ls
+          ls -l /usr/bin/apt
+          ls -l /usr/bin/which
+          ls -l /usr/sbin/mkinitramfs
+          which which
+          which mkinitramfs
+          ls -l $(which mkinitramfs)
+          mkinitramfs -c gzip -o /images/initrd.img-$KERNEL_VER $KERNEL_VER
+          EOF
+
+          cat ./debian-chroot/mkinitramfs.sh
+
+      - name: Unpack kernel deb-package
+        run: |
+          sudo chroot debian-chroot /bin/bash -c "dpkg-deb -x debs/linux-image-*.deb /"
+          
+      - name: Verify linker after extract
+        run: |
+          # Проверяем, что линкер на месте и корректен
+          if [ ! -e debian-chroot/lib/ld-linux-aarch64.so.1 ]; then
+          echo "ERROR: linker missing after dpkg-deb!"
+          exit 1
+          fi
+          file debian-chroot/lib/ld-linux-aarch64.so.1  # должен быть симлинк или ELF
+
+
+      - name: Create initrd
+        run: |
+          sudo chroot debian-chroot /bin/bash -c "KERNEL_VER=$(dpkg-deb -f /debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64 mkinitramfs -c gzip -o /images/initrd.img-$KERNEL_VER $KERNEL_VER"
+
+      - name: Step 5. Verify initrd created
+        run: |
+          if [ ! -f debian-chroot/images/initrd.img-* ]; then
+          echo "ERROR: initrd not created!"
+          exit 1
+          fi
+          ls -la debian-chroot/images/initrd.img-*
+
+      - name: Copy result to output 
+        run: |
+          sudo mv ./debian-chroot/images ./build/output/
+
+
+      - name: Delete chroot
+        run: |
+          sudo umount debian-chroot/proc
+          sudo umount debian-chroot/sys
+          sudo umount debian-chroot/dev/pts
+          sudo umount debian-chroot/dev/
+
+          sudo rm -rf debian-chroot/*
+
+
+      - name: Extract vmlinuz and DTB
+        run: |
+          cd build/output/
+          mkdir ./debs/extracted
+          dpkg-deb -x ./debs/linux-image-*.deb ./debs/extracted/
+          dpkg-deb -x ./debs/linux-dtb-*.deb ./debs/extracted/
+
+
+      - name: Pack vmlinuz, DTB and initrd
+        run: |
+          cd build/output/
+          KERNEL_VER=$(dpkg-deb -f ./debs/linux-image-*.deb Armbian-Kernel-Version)
+
+          if [ -z "$KERNEL_VER" ]; then
+          echo "Error: Armbian-Kernel-Version not found in deb package!"
+          exit 1
+          fi
+          echo "Detected kernel version: $KERNEL_VER"
+
+          cp ./images/initrd.img* ./debs/extracted/boot/
+
+          cd ./debs/extracted/boot/
+
+          tar cvf $GITHUB_WORKSPACE/build/output/images/linux-image-$KERNEL_VER.tar.gz *
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: armbian-initrd
+          path: |
+            #build/output/images/vmlinuz-*
+            #build/output/images/dtb-*/*.dtb
+            #build/output/images/modules-*.tgz
+            #build/output/debs/*.deb
+
+            build/output/images/linux-image-*.tar.gz
+
+            if-no-files-found: error
