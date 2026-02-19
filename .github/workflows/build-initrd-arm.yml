@@ -36,7 +36,8 @@ jobs:
           run-id: ${{ github.event.workflow_run.id || github.event.inputs.run-id || '22103845596' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get and export kernel version 
+      - name: Get and export kernel version
+        run: |
           KERNEL_VER=$(dpkg-deb -f ./build/output/debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64
 
           if [ -z "$KERNEL_VER" ]; then
@@ -93,7 +94,7 @@ jobs:
       - name: Unpack kernel deb-package
         run: |
           sudo chroot debian-chroot /bin/bash -c "dpkg-deb -x debs/linux-image-*.deb /"
-          
+
       - name: Verify linker after extract and restore
         run: |
           # Проверяем, что линкер на месте и корректен
@@ -115,7 +116,7 @@ jobs:
           fi
           ls -la debian-chroot/images/initrd.img-*
 
-      - name: Copy result to output 
+      - name: Copy result to output
         run: |
           sudo mv ./debian-chroot/images ./build/output/
 
@@ -141,7 +142,7 @@ jobs:
       - name: Pack vmlinuz, DTB and initrd
         run: |
           cd build/output/
-         cp ./images/initrd.img* ./debs/extracted/boot/
+          cp ./images/initrd.img* ./debs/extracted/boot/
 
           cd ./debs/extracted/boot/
 
