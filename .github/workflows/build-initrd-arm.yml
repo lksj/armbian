@@ -95,7 +95,7 @@ jobs:
 
       - name: Create initrd
         run: |
-          sudo chroot debian-chroot /bin/bash -c "pwd; ls -l /debs/; export KERNEL_VER=$(dpkg-deb -f debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64; mkinitramfs -c gzip -o /images/initrd.img-$KERNEL_VER $KERNEL_VER"
+          sudo chroot debian-chroot /bin/bash -c "pwd; ls -l /debs/*; export KERNEL_VER=$(dpkg-deb -f debs/linux-image-*.deb Armbian-Kernel-Version)-current-arm64; mkinitramfs -c gzip -o /images/initrd.img-$KERNEL_VER $KERNEL_VER"
 
       - name: Verify initrd created
         run: |
