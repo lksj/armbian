@@ -46,7 +46,7 @@ jobs:
           cp -Rv ./build/output/debs/linux-image-*.deb ./debian-chroot/debs
 
 
-          sudo debootstrap --arch arm64 --include=sudo,initramfs-tools,coreutils,debianutils,file stable debian-chroot http://deb.debian.org/debian
+          sudo debootstrap --arch arm64 --include=sudo,initramfs-tools,coreutils,debianutils,file stable debian-chroot http://deb.debian.org/debian || sudo cat /home/runner/work/armbian/armbian/debian-chroot/debootstrap/debootstrap.log
 
           sudo rm -rf ./debian-chroot/lib/ld-linux-aarch64.so.1
           sudo cp -v ./debian-chroot/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1 ./debian-chroot/lib/
